@@ -7,7 +7,7 @@ Give execution rights to the script
 chmod +x ovh-dynhost
 ```
 
-- Sets the `home.mydomain.com` host to your current public IP retrieved from (SSL) ipify.org using `myusername` and `mypassword` as credentials.
+- Sets the `home.mydomain.com` host to your current public IP retrieved from (SSL) [ipify.org](https://www.ipify.org) using `myusername` and `mypassword` as credentials.
 ```
 ovh-dynhost home.mydomain.com myusername mypassword
 ```
@@ -15,7 +15,7 @@ ovh-dynhost home.mydomain.com myusername mypassword
 ```
 ovh-dynhost --ip=0.0.0.0 home.mydomain.com myusername mypassword
 ```
-- Use the (unencrypted, check the `http://` instead of `https://`) API from whatismyipaddress.com
+- Use the (unencrypted, check the `http://` instead of `https://`) API from [whatismyipaddress.com](http://www.whatismyipaddress.com)
 ```
 ovh-dynhost --pub-ip-source=http://bot.whatismyipaddress.com home.mydomain.com myusername mypassword
 ```
