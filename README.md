@@ -23,3 +23,9 @@ ovh-dynhost --pub-ip-source=http://bot.whatismyipaddress.com home.mydomain.com m
 ```
 ovh-dynhost --log-file=ovh.log home.mydomain.com myusername mypassword
 ```
+
+# External Dependencies 
+- [docopt](https://github.com/docopt/docopt)
+`pip install docopt`
+- [requests](https://github.com/kennethreitz/requests)
+`pip install requests`
