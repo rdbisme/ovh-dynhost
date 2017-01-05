@@ -22,13 +22,19 @@ Options:
 
 Examples:
     ovh-dynhost home.mydomain.com myusername mypassword (Standard)
+
     ovh-dynhost --ip=0.0.0.0 home.mydomain.com myusername mypassword
         (Override Public Ip)
-    ovh-dynhost --pub-ip-source=bot.whatismyipaddress.com home.mydomain.com \
-myusername mypassword
+
+    ovh-dynhost --pub-ip-source=http://bot.whatismyipaddress.com \\
+    home.mydomain.com myusername mypassword
     (Get public ip from whatismyipaddress.com instead  of ipify.org)
+
     ovh-dynhost --log-file=ovh.log home.mydomain.com myusername mypassword
         (Log to `ovh.log` file)
+
+
+--------------------------------------------------------------------------------
 
 Copyright 2017 Ruben Di Battista <rubendibattista@gmail.com>
 
