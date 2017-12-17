@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
 This scripts updates the DynHost configured on your domain registered on ovh.
 Before running this script you need to create a DynHost using the Manager Web
@@ -8,7 +8,7 @@ The script exit with a 1 code if errors occur, 75 if the IP on the host is the
 same that you are sending. 0 if the change happened correctly.
 
 Usage:
-    ovh-dynhost [options] <hostname> <username> <password>
+    ovh-dynhost [options] [<hostname>] [<username>] [<password>]
 
 Options:
     -h, --help                  Show this help text
@@ -32,45 +32,44 @@ Examples:
 
     ovh-dynhost --log-file=ovh.log home.mydomain.com myusername mypassword
         (Log to `ovh.log` file)
-
-
---------------------------------------------------------------------------------
-
-Copyright 2017 Ruben Di Battista <rubendibattista@gmail.com>
-
-Redistribution and use in source and binary forms, with or without modification,
-are permitted provided that the following conditions are met:
-
-1. Redistributions of source code must retain the above copyright notice,
-this list of conditions and the following disclaimer.
-
-2. Redistributions in binary form must reproduce the above copyright notice,
-this list of conditions and the following disclaimer in the documentation
-and/or other materials provided with the distribution.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
-import docopt
+import json
 import logging
-import requests
+import os
 import sys
+import requests
+import docopt
 
-VERSION = '0.1'
+VERSION = '0.2'
 
 DEFAULT_PUBLIC_IP_API_URL = 'https://api.ipify.org'
+DEFAULT_CONF_PATH = os.path.join(os.getenv('HOME'), '.ovh-dynhost.conf')
 OVH_API_ENDPOINT = 'https://www.ovh.com/nic/update'
 
-if __name__ == '__main__':
+def get_conf(conf_path=DEFAULT_CONF_PATH, hostname=None, username=None, password=None):
+    global LOGGER
+
+    if not os.path.exists(conf_path):
+        LOGGER.warning("No config file found at {conf_path}".format(conf_path=conf_path))
+        return (hostname, username, password)
+
+    conf_file = open(conf_path, 'r')
+    conf = json.load(conf_file)
+    conf_file.close()
+
+    if hostname is None:
+        hostname = conf['hostname']
+    if username is None:
+        username = conf['username']
+    if password is None:
+        password = conf['password']
+
+    return (hostname, username, password)
+
+def main():
+    global LOGGER
+
     # Parse arguments
     args = docopt.docopt(__doc__, version='Ovh DynHost Update Script v'+VERSION)
 
@@ -81,13 +80,13 @@ if __name__ == '__main__':
     logfile = args['--log-file']
 
     # Logging Configuration
-    logger = logging.getLogger('ovh-dynhost')
-    logger.setLevel(logging.DEBUG)
+    LOGGER = logging.getLogger('ovh-dynhost')
+    LOGGER.setLevel(logging.DEBUG)
 
     # Stdout Log
     console_logger = logging.StreamHandler()
     console_logger.setLevel(logging.INFO)
-    logger.addHandler(console_logger)
+    LOGGER.addHandler(console_logger)
 
     # File Log (if requested)
     if logfile:
@@ -95,14 +94,20 @@ if __name__ == '__main__':
             filename=logfile,
             level=logging.DEBUG,
             format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-        logger.info("Logging to {logfile}".format(logfile=logfile))
+        LOGGER.info("Logging to {logfile}".format(logfile=logfile))
 
+    (hostname, username, password) = get_conf(hostname=hostname, 
+            username=username, 
+            password=password)
+
+    LOGGER.debug('Hostname %s username %s password %s' % (hostname, username, password))
+    
     if public_ip_api_url:
         url = public_ip_api_url
     else:
         url = DEFAULT_PUBLIC_IP_API_URL
 
-    logger.debug("Retrieving Public IP from:{}".format(url))
+    LOGGER.debug("Retrieving Public IP from:{}".format(url))
 
     if args['--ip']:
         ip = args['--ip']
@@ -110,7 +115,7 @@ if __name__ == '__main__':
         # Retrieving public IP from web service
         ip = requests.get(url).text
 
-    logger.info("Public Ip: {}".format(ip))
+    LOGGER.info("Public IP: {}".format(ip))
 
     # Building Request
     payload = {
@@ -126,21 +131,23 @@ if __name__ == '__main__':
     authentication = requests.auth.HTTPBasicAuth(username, password)
 
     # Run Request
-    r = requests.Request('GET', url=OVH_API_ENDPOINT, params=payload,
-                         headers=headers, auth=authentication)
-    r = r.prepare()
+    request = requests.Request('GET', url=OVH_API_ENDPOINT, params=payload,
+                               headers=headers, auth=authentication).prepare()
 
-    s = requests.Session()
-    response = s.send(r).text.lower()
+    session = requests.Session()
+    response = session.send(request).text.lower()
 
     if "good" in response:
-        logger.info("IP successfully updated")
+        LOGGER.info("IP successfully updated")
         sys.exit(0)
     elif "nochg" in response:
-        logger.debug("Matching same IP.  Not changed")
+        LOGGER.debug("Matching same IP.  Not changed")
         sys.exit(75)
     else:
-        logger.error(
+        LOGGER.error(
             "Error occured in updating IP. Response from server:{}"
             .format(response))
         sys.exit(1)
+
+if __name__ == '__main__':
+    main()
