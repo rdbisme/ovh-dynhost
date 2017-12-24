@@ -12,3 +12,6 @@ all: wheel dist
 
 testpypi: wheel dist
 	twine upload --repository testpypi dist/*
+
+clean: 
+	rm -rf dist *.egg-info
