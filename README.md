@@ -1,11 +1,18 @@
 # ovh-dynhost
 This script sets the DynHost service (that must be created before, check https://www.ovh.com/us/g2024.hosting_dynhost) with your current public IP that is retrieved from ipify.org API (default, can be overriden). 
 
+## Installation
+Install the script using pip (I strongly suggest to use a virtualenv)
+
+`pip install .`
+
+(The script will be now available in the `PATH`. Reactivate the virtualenv if necessary)
+
+PS: The script is also available directly on PyPI.
+
+`pip install ovh_dynhost`
+
 ## Usage
-Give execution rights to the script
-```
-chmod +x ovh-dynhost
-```
 
 - Sets the `home.mydomain.com` host to your current public IP retrieved from (SSL) [ipify.org](https://www.ipify.org) using `myusername` and `mypassword` as credentials.
 ```
@@ -29,7 +36,3 @@ If your prefer to not show up your username or password in the shell, you can pr
 ```
 ovh-dynhost home.mydomain.com --conf-file=/etc/ovh-dyndns/config.json
 ```
-
-# External Dependencies 
-- [docopt](https://github.com/docopt/docopt)
-- [requests](https://github.com/kennethreitz/requests)
