@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 """
 This scripts updates the DynHost configured on your domain registered on ovh.
 Before running this script you need to create a DynHost using the Manager Web
