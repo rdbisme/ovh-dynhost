@@ -24,8 +24,12 @@ ovh-dynhost --pub-ip-source=http://bot.whatismyipaddress.com home.mydomain.com m
 ovh-dynhost --log-file=ovh.log home.mydomain.com myusername mypassword
 ```
 
+If your prefer to not show up your username or password in the shell, you can provide a separate JSON configuration file. By default the script will lookup into `$HOME/.ovh-dyndns.conf`, but you can also provide a custom configuration file
+
+```
+ovh-dynhost home.mydomain.com --conf-file=/etc/ovh-dyndns/config.json
+```
+
 # External Dependencies 
 - [docopt](https://github.com/docopt/docopt)
-`pip install docopt`
 - [requests](https://github.com/kennethreitz/requests)
-`pip install requests`

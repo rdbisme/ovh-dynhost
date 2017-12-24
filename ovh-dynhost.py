@@ -4,8 +4,11 @@ This scripts updates the DynHost configured on your domain registered on ovh.
 Before running this script you need to create a DynHost using the Manager Web
 Interface as explained in this guide:
     https://www.ovh.com/us/g2024.hosting_dynhost
-The script exit with a 1 code if errors occur, 75 if the IP on the host is the
+The script exits with a 1 code if errors occur, 75 if the IP on the host is the
 same that you are sending. 0 if the change happened correctly.
+You can also specify the auth credentials in a separate JSON configuration file
+
+Ruben Di Battista (https://rdb.is)
 
 Usage:
     ovh-dynhost [options] [<hostname>] [<username>] [<password>]
@@ -19,6 +22,8 @@ Options:
 
     --log-file=<path>           Set a file where to log into. Default logs only
                                     in stdout
+    --conf-file=<path>          Specify where to locate the JSON configuration
+                                    file. Default in $HOME/.ovh-dynhost.conf
 
 Examples:
     ovh-dynhost home.mydomain.com myusername mypassword (Standard)
@@ -41,17 +46,24 @@ import sys
 import requests
 import docopt
 
-VERSION = '0.2'
+VERSION = '0.3'
 
 DEFAULT_PUBLIC_IP_API_URL = 'https://api.ipify.org'
 DEFAULT_CONF_PATH = os.path.join(os.getenv('HOME'), '.ovh-dynhost.conf')
 OVH_API_ENDPOINT = 'https://www.ovh.com/nic/update'
 
-def get_conf(conf_path=DEFAULT_CONF_PATH, hostname=None, username=None, password=None):
+# EXIT CODES
+SAME_IP_ERROR = 75
+GENERAL_ERROR = 1
+
+
+def get_conf(conf_path, hostname=None, username=None,
+             password=None):
     global LOGGER
 
     if not os.path.exists(conf_path):
-        LOGGER.warning("No config file found at {conf_path}".format(conf_path=conf_path))
+        LOGGER.warning("No config file found at {conf_path}".format(
+            conf_path=conf_path))
         return (hostname, username, password)
 
     conf_file = open(conf_path, 'r')
@@ -67,17 +79,23 @@ def get_conf(conf_path=DEFAULT_CONF_PATH, hostname=None, username=None, password
 
     return (hostname, username, password)
 
+
 def main():
     global LOGGER
 
     # Parse arguments
-    args = docopt.docopt(__doc__, version='Ovh DynHost Update Script v'+VERSION)
+    args = docopt.docopt(
+        __doc__, version='Ovh DynHost Update Script v'+VERSION)
 
     hostname = args['<hostname>']
     username = args['<username>']
     password = args['<password>']
     public_ip_api_url = args['--pub-ip-source']
     logfile = args['--log-file']
+    conf_file = args['--conf-file']
+
+    if not(conf_file):
+        conf_file = DEFAULT_CONF_PATH
 
     # Logging Configuration
     LOGGER = logging.getLogger('ovh-dynhost')
@@ -96,12 +114,16 @@ def main():
             format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
         LOGGER.info("Logging to {logfile}".format(logfile=logfile))
 
-    (hostname, username, password) = get_conf(hostname=hostname, 
-            username=username, 
-            password=password)
+    (hostname, username, password) = get_conf(conf_path=conf_file,
+                                              hostname=hostname,
+                                              username=username,
+                                              password=password)
 
-    LOGGER.debug('Hostname %s username %s password %s' % (hostname, username, password))
-    
+    LOGGER.debug('Hostname {hostname} username {username} '
+                 'password {password}'.format(hostname=hostname,
+                                              username=username,
+                                              password=password))
+
     if public_ip_api_url:
         url = public_ip_api_url
     else:
@@ -142,12 +164,13 @@ def main():
         sys.exit(0)
     elif "nochg" in response:
         LOGGER.debug("Matching same IP.  Not changed")
-        sys.exit(75)
+        sys.exit(SAME_IP_ERROR)
     else:
         LOGGER.error(
-            "Error occured in updating IP. Response from server:{}"
+            "Error occurred in updating IP. Response from server:{}"
             .format(response))
-        sys.exit(1)
+        sys.exit(GENERAL_ERROR)
+
 
 if __name__ == '__main__':
     main()
