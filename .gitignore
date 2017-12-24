@@ -1,2 +1,8 @@
 *.json
 *.conf
+
+# Setuptools stuff
+build/
+dist/
+*.egg-info/
+README.rst

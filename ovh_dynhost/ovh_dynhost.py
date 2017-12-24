@@ -46,7 +46,7 @@ import sys
 import requests
 import docopt
 
-VERSION = '0.3'
+from ._version import __version__
 
 DEFAULT_PUBLIC_IP_API_URL = 'https://api.ipify.org'
 DEFAULT_CONF_PATH = os.path.join(os.getenv('HOME'), '.ovh-dynhost.conf')
@@ -85,7 +85,7 @@ def main():
 
     # Parse arguments
     args = docopt.docopt(
-        __doc__, version='Ovh DynHost Update Script v'+VERSION)
+        __doc__, version=__version__)
 
     hostname = args['<hostname>']
     username = args['<username>']
@@ -147,7 +147,7 @@ def main():
     }
 
     headers = {
-        'user-agent': 'ovh-dynhost/' + VERSION
+        'user-agent': 'ovh-dynhost/' + __version__
     }
 
     authentication = requests.auth.HTTPBasicAuth(username, password)
