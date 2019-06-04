@@ -4,7 +4,9 @@ from codecs import open
 from os import path
 
 # Get version in namespace
-execfile('ovh_dynhost/_version.py')
+with open('ovh_dynhost/_version.py') as f:
+    code = compile(f.read(), "_version.py", 'exec')
+    exec(code)
 
 here = path.abspath(path.dirname(__file__))
 
@@ -39,13 +41,15 @@ setup(
 
         'License :: OSI Approved :: BSD License',
 
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
     ],
 
     keywords='ovh dynhost dynamic dns',
     packages=['ovh_dynhost'],
     install_requires=['requests', 'docopt'],
+    extras_require={
+        'dev': ['twine']
+    },
 
     entry_points={  # Optional
         'console_scripts': [
