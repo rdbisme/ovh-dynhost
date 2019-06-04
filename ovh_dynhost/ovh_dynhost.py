@@ -3,7 +3,7 @@
 This scripts updates the DynHost configured on your domain registered on ovh.
 Before running this script you need to create a DynHost using the Manager Web
 Interface as explained in this guide:
-    https://www.ovh.com/us/g2024.hosting_dynhost
+    https://docs.ovh.com/gb/en/domains/hosting_dynhost/
 The script exits with a 1 code if errors occur, 75 if the IP on the host is the
 same that you are sending. 0 if the change happened correctly.
 You can also specify the auth credentials in a separate JSON configuration file
@@ -15,6 +15,7 @@ Usage:
 
 Options:
     -h, --help                  Show this help text
+    -d, --debug                 Enable Debug verbosity for logging
     --ip=<ip>                   Override automatically detected public ip
                                     with <ip>. Default retrieved from ipify
     --pub-ip-source=<url>       Override the API url from which to get as a
@@ -93,24 +94,28 @@ def main():
     public_ip_api_url = args['--pub-ip-source']
     logfile = args['--log-file']
     conf_file = args['--conf-file']
+    debug = args['--debug']
 
     if not(conf_file):
         conf_file = DEFAULT_CONF_PATH
 
     # Logging Configuration
     LOGGER = logging.getLogger('ovh-dynhost')
-    LOGGER.setLevel(logging.DEBUG)
+    logging_level = logging.INFO
+    if debug:
+        logging_level = logging.DEBUG
+    LOGGER.setLevel(logging_level)
 
     # Stdout Log
     console_logger = logging.StreamHandler()
-    console_logger.setLevel(logging.INFO)
+    console_logger.setLevel(logging_level)
     LOGGER.addHandler(console_logger)
 
     # File Log (if requested)
     if logfile:
         logging.basicConfig(
             filename=logfile,
-            level=logging.DEBUG,
+            level=logging_level,
             format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
         LOGGER.info("Logging to {logfile}".format(logfile=logfile))
 
