@@ -5,7 +5,7 @@ dist: readme
 	python setup.py sdist
 
 wheel: dist
-	python setup.py bdist_wheel --universal
+	python setup.py bdist_wheel
 
 all: wheel dist
 	twine upload dist/*
