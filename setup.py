@@ -13,9 +13,7 @@ from setuptools import find_packages, setup, Command
 
 # Package meta-data.
 NAME = "ovh-dynhost"
-DESCRIPTION = (
-    "A script to update the OVH DynHost with your current public IP",
-)
+DESCRIPTION = "A script to update the OVH DynHost with your current public IP"
 URL = "https://github.com/rubendibattista/ovh-dynhost"
 EMAIL = "rubendibattista@gmail.com"
 AUTHOR = "Ruben Di Battista"
