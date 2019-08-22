@@ -13,7 +13,9 @@ from setuptools import find_packages, setup, Command
 
 # Package meta-data.
 NAME = "ovh-dynhost"
-DESCRIPTION = "A script to update the OVH DynHost with your current public IP',
+DESCRIPTION = (
+    "A script to update the OVH DynHost with your current public IP",
+)
 URL = "https://github.com/rubendibattista/ovh-dynhost"
 EMAIL = "rubendibattista@gmail.com"
 AUTHOR = "Ruben Di Battista"
@@ -113,12 +115,12 @@ setup(
     classifiers=[
         # Trove classifiers
         # Full list: https://pypi.python.org/pypi?%3Aaction=list_classifiers
-        'Development Status :: 5 - Production/Stable',
-        'Environment :: Console',
-        'Intended Audience :: System Administrators',
-        'License :: OSI Approved :: BSD License',
-        'Programming Language :: Python :: 3',
-        'Topic :: Internet :: Name Service (DNS)',
+        "Development Status :: 5 - Production/Stable",
+        "Environment :: Console",
+        "Intended Audience :: System Administrators",
+        "License :: OSI Approved :: BSD License",
+        "Programming Language :: Python :: 3",
+        "Topic :: Internet :: Name Service (DNS)",
     ],
     # $ setup.py publish support.
     cmdclass={"upload": UploadCommand},
