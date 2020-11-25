@@ -54,7 +54,6 @@ DEFAULT_CONF_PATH = os.path.join(os.getenv("HOME"), ".ovh-dynhost.conf")
 OVH_API_ENDPOINT = "https://www.ovh.com/nic/update"
 
 # EXIT CODES
-SAME_IP_ERROR = 75
 GENERAL_ERROR = 1
 
 
@@ -172,7 +171,7 @@ def main():
         sys.exit(0)
     elif "nochg" in response:
         LOGGER.debug("Matching same IP.  Not changed")
-        sys.exit(SAME_IP_ERROR)
+        sys.exit(0)
     else:
         LOGGER.error(
             "Error occurred in updating IP. Response from server:{}".format(
