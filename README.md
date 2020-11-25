@@ -1,5 +1,5 @@
 # ovh-dynhost
-This script sets the DynHost service (that must be created before, check https://docs.ovh.com/gb/en/domains/hosting_dynhost/) with your current public IP that is retrieved from ipify.org API (default, can be overriden). 
+This script sets the DynHost service (that must be created before, check https://docs.ovh.com/gb/en/domains/hosting_dynhost/) with your current public IP that is retrieved from ipify.org API (default, can be overridden). 
 
 ## Installation
 Install the script using pip (I strongly suggest to use a virtualenv)
